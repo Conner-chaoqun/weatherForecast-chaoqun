@@ -8,6 +8,7 @@
     tools:context=".MainActivity">
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/title_cs"
         android:layout_width="0dp"
         android:layout_height="45dp"
         android:layout_marginEnd="16dp"
@@ -79,5 +80,149 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/base_action_bar_action_city" />
     </android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/city_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/city_tv_text"
+        android:textColor="@android:color/white"
+        android:textSize="40sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_cs" />
+
+    <TextView
+        android:id="@+id/time_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/time_tv_text"
+        android:textColor="@android:color/white"
+        app:layout_constraintStart_toStartOf="@+id/city_tv"
+        app:layout_constraintTop_toBottomOf="@+id/city_tv" />
+
+    <TextView
+        android:id="@+id/humidity_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/humidity_tv_text"
+        android:textColor="@android:color/white"
+        app:layout_constraintStart_toStartOf="@+id/time_tv"
+        app:layout_constraintTop_toBottomOf="@+id/time_tv" />
+
+    <TextView
+        android:id="@+id/pm_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/pm_tv_text"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/title_cs" />
+
+    <TextView
+        android:id="@+id/pm_data_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/pm_data_tv_text"
+        android:textColor="@android:color/white"
+        android:textSize="30sp"
+        app:layout_constraintStart_toStartOf="@+id/pm_tv"
+        app:layout_constraintTop_toBottomOf="@+id/pm_tv" />
+
+    <ImageView
+        android:id="@+id/pm_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toEndOf="@+id/pm_data_tv"
+        app:layout_constraintTop_toTopOf="@+id/pm_tv"
+        app:srcCompat="@drawable/biz_plugin_weather_0_50" />
+
+    <TextView
+        android:id="@+id/pm_quality_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/pm_quality_tv_text"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/pm_data_tv"
+        app:layout_constraintTop_toBottomOf="@+id/pm_data_tv" />
+
+    <TextView
+        android:id="@+id/tem_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/tem_tv_text"
+        android:textColor="@android:color/white"
+        app:layout_constraintStart_toStartOf="@+id/humidity_tv"
+        app:layout_constraintTop_toBottomOf="@+id/humidity_tv" />
+
+    <ImageView
+        android:id="@+id/weather_img"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tem_tv"
+        app:srcCompat="@drawable/biz_plugin_weather_qing" />
+
+    <TextView
+        android:id="@+id/week_today_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="24dp"
+        android:layout_marginStart="24dp"
+        android:text="@string/week_today_tv_text"
+        android:textColor="@android:color/white"
+        app:layout_constraintStart_toEndOf="@+id/weather_img"
+        app:layout_constraintTop_toTopOf="@+id/weather_img" />
+
+    <TextView
+        android:id="@+id/tem_today_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/tem_today_tv_text"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        app:layout_constraintStart_toStartOf="@+id/week_today_tv"
+        app:layout_constraintTop_toBottomOf="@+id/week_today_tv" />
+
+    <TextView
+        android:id="@+id/climate_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/climate_tv_text"
+        android:textColor="@android:color/white"
+        app:layout_constraintStart_toStartOf="@+id/tem_today_tv"
+        app:layout_constraintTop_toBottomOf="@+id/tem_today_tv" />
+
+    <TextView
+        android:id="@+id/wind_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/wind_tv_text"
+        android:textColor="@android:color/white"
+        app:layout_constraintStart_toStartOf="@+id/climate_tv"
+        app:layout_constraintTop_toBottomOf="@+id/climate_tv" />
 
 </android.support.constraint.ConstraintLayout>

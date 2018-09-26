@@ -3,4 +3,15 @@
     <string name="weather_info_text">天气预报</string>
     <string name="title_city_img">城市</string>
     <string name="title_city_tv_name">北京天气</string>
+    <string name="city_tv_text">北京</string>
+    <string name="time_tv_text">今天18:35发布</string>
+    <string name="humidity_tv_text">湿度:50%</string>
+    <string name="pm_tv_text">PM2.5</string>
+    <string name="pm_data_tv_text">220</string>
+    <string name="pm_quality_tv_text">重度污染</string>
+    <string name="tem_tv_text">温度:20℃</string>
+    <string name="week_today_tv_text">今天 星期三</string>
+    <string name="tem_today_tv_text">10℃~30℃</string>
+    <string name="climate_tv_text">多云转晴</string>
+    <string name="wind_tv_text">微风</string>
 </resources>
