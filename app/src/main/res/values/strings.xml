@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MyWeatherForecast</string>
+    <string name="weather_info_text">天气预报</string>
 </resources>
