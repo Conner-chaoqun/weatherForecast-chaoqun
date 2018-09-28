@@ -8,9 +8,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
+
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -82,6 +88,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     String result = response.toString();
                     Log.d("myWeatherForecast", result);
+                    parseXML(result);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }finally {
@@ -91,5 +98,80 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+    private void parseXML(String xml) {
+        int fengxiangCount = 0;
+        int fengliCount = 0;
+        int dateCount = 0;
+        int highCount = 0;
+        int lowCount = 0;
+        int typeCount = 0;
+        try {
+            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+            XmlPullParser xmlPullParser = factory.newPullParser();
+            xmlPullParser.setInput(new StringReader(xml));
+            int getType = xmlPullParser.getEventType();
+            Log.d("myWeatherForecast", "try to parseXML");
+            while (getType != xmlPullParser.END_DOCUMENT){
+                switch (getType) {
+                    case XmlPullParser.START_DOCUMENT:
+                        break;
+
+                    case XmlPullParser.START_TAG:
+                        if (xmlPullParser.getName().equals("city")) {
+                            getType = xmlPullParser.next();
+                            Log.d("myWeatherForecast", "city: "+xmlPullParser.getText());
+                        }else if (xmlPullParser.getName().equals("updatetime")) {
+                            getType = xmlPullParser.next();
+                            Log.d("myWeatherForecast", "updatetime: "+xmlPullParser.getText());
+                        }else if (xmlPullParser.getName().equals("shidu")) {
+                            getType = xmlPullParser.next();
+                            Log.d("myWeatherForecast", "shidu: "+xmlPullParser.getText());
+                        }else if (xmlPullParser.getName().equals("wendu")) {
+                            getType = xmlPullParser.next();
+                            Log.d("myWeatherForecast", "wendu: "+xmlPullParser.getText());
+                        }else if (xmlPullParser.getName().equals("pm25")) {
+                            getType =xmlPullParser.next();
+                            Log.d("myWeatherForecast", "pm25: "+xmlPullParser.getText());
+                        }else if (xmlPullParser.getName().equals("quality")) {
+                            getType = xmlPullParser.next();
+                            Log.d("myWeatherForecast", "quality: "+xmlPullParser.getText());
+                        }else if (xmlPullParser.getName().equals("fengxiang") && fengxiangCount == 0) {
+                            getType = xmlPullParser.next();
+                            Log.d("myWeatherForecast", "fengxiang: "+xmlPullParser.getText());
+                            fengxiangCount += 1;
+                        }else if (xmlPullParser.getName().equals("fengli") && fengliCount == 0) {
+                            getType = xmlPullParser.next();
+                            Log.d("myWeatherForecast", "fengli: "+xmlPullParser.getText());
+                            fengliCount += 1;
+                        }else if (xmlPullParser.getName().equals("date") && dateCount == 0) {
+                            getType = xmlPullParser.next();
+                            Log.d("myWeatherForecast", "date: "+xmlPullParser.getText());
+                            dateCount += 1;
+                        }else if (xmlPullParser.getName().equals("high") && highCount == 0) {
+                            getType = xmlPullParser.next();
+                            Log.d("myWeatherForecast", "high: "+xmlPullParser.getText());
+                            highCount += 1;
+                        }else if (xmlPullParser.getName().equals("low") && lowCount == 0) {
+                            getType = xmlPullParser.next();
+                            Log.d("myWeatherForecast", "low: "+xmlPullParser.getText());
+                            lowCount += 1;
+                        }else if (xmlPullParser.getName().equals("type") && typeCount == 0){
+                            getType = xmlPullParser.next();
+                            Log.d("myWeatherForecast", "type: "+xmlPullParser.getText());
+                            typeCount += 1;
+                        }
+
+                    case XmlPullParser.END_TAG:
+                        break;
+                }
+                getType = xmlPullParser.next();
+            }
+        } catch (XmlPullParserException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
