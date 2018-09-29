@@ -145,11 +145,11 @@
         android:id="@+id/pm_img"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintStart_toEndOf="@+id/pm_data_tv"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/pm_tv"
-        app:srcCompat="@drawable/biz_plugin_weather_0_50" />
+        app:srcCompat="@drawable/biz_plugin_weather_201_300" />
 
     <TextView
         android:id="@+id/pm_quality_tv"
@@ -181,7 +181,7 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tem_tv"
-        app:srcCompat="@drawable/biz_plugin_weather_qing" />
+        app:srcCompat="@drawable/biz_plugin_weather_duoyun" />
 
     <TextView
         android:id="@+id/week_today_tv"
@@ -191,6 +191,7 @@
         android:layout_marginStart="24dp"
         android:text="@string/week_today_tv_text"
         android:textColor="@android:color/white"
+        android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/weather_img"
         app:layout_constraintTop_toTopOf="@+id/weather_img" />
 
@@ -212,6 +213,7 @@
         android:layout_marginTop="8dp"
         android:text="@string/climate_tv_text"
         android:textColor="@android:color/white"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@+id/tem_today_tv"
         app:layout_constraintTop_toBottomOf="@+id/tem_today_tv" />
 
@@ -222,6 +224,7 @@
         android:layout_marginTop="8dp"
         android:text="@string/wind_tv_text"
         android:textColor="@android:color/white"
+        android:textSize="18sp"
         app:layout_constraintStart_toStartOf="@+id/climate_tv"
         app:layout_constraintTop_toBottomOf="@+id/climate_tv" />
 
