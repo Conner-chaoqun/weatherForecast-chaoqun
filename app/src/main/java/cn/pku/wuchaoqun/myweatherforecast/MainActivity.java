@@ -38,7 +38,9 @@ public class MainActivity extends AppCompatActivity {
 
     private ImageView weatherImg, pmImg;
 
-    //private Map<String,android.R.drawable> imgSrc = new HashMap<String, android.R.drawable>();
+    private Map<String,Integer> imgSrcForWeather = new HashMap<>();
+
+    private Map<Integer,Integer> imgSrcForPm = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +102,14 @@ public class MainActivity extends AppCompatActivity {
         weatherImg = findViewById(R.id.weather_img);
         pmImg = findViewById(R.id.pm_img);
 
-        //imgSrc.put("晴", R.drawable.biz_plugin_weather_qing);
+        imgSrcForWeather.put("晴", R.drawable.biz_plugin_weather_qing);
+        imgSrcForWeather.put("多云", R.drawable.biz_plugin_weather_duoyun);
+        imgSrcForPm.put(0, R.drawable.biz_plugin_weather_0_50);
+        imgSrcForPm.put(1, R.drawable.biz_plugin_weather_51_100);
+        imgSrcForPm.put(2, R.drawable.biz_plugin_weather_101_150);
+        imgSrcForPm.put(3, R.drawable.biz_plugin_weather_151_200);
+        imgSrcForPm.put(4, R.drawable.biz_plugin_weather_201_300);
+        imgSrcForPm.put(5, R.drawable.biz_plugin_weather_201_300);
     }
 
     private void updateWeather(TodayWeatherInfo info) {
@@ -116,12 +125,9 @@ public class MainActivity extends AppCompatActivity {
         climateTv.setText(info.getType());
         windTv.setText(info.getFengxiang() + " 风力:" + info.getFengli());
 
-        if (info.getType().equals("晴")) {
-            weatherImg.setImageResource(R.drawable.biz_plugin_weather_qing);
-        }
-        if (Integer.parseInt(info.getPm25()) <= 50) {
-            pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
-        }
+        weatherImg.setImageResource(imgSrcForWeather.get(info.getType()));
+        pmImg.setImageResource(imgSrcForPm.get(Integer.parseInt(info.getPm25())/50));
+
 
         Toast.makeText(this, "更新成功！", Toast.LENGTH_SHORT).show();
     }
