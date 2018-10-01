@@ -1,5 +1,6 @@
 package cn.pku.wuchaoqun.myweatherforecast;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int UPDATE_TODAY_WEATHER = 1;
 
-    private ImageView myUpdate;
+    private ImageView myUpdate, myCitySelect;
 
     private TextView cityTv, timeTv, humidityTv, weekTodayTv, pmDataTv, pmQualityTv, temTv, temTodayTv, climateTv, windTv, titleCityTv;
 
@@ -66,9 +67,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        myCitySelect = findViewById(R.id.title_city_img);
+        myCitySelect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SelectCity.class);
+                //startActivity(intent);
+                startActivityForResult(intent, 1);
+            }
+        });
+
         testNet();
 
         initView();
+
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent){
+        if (requestCode == 1 && resultCode == RESULT_OK){
+            String newCityCode = intent.getStringExtra("cityCode");
+            Log.d("myWeatherForecast", "选择的城市代码是："+newCityCode);
+            if (NetUtil.getNetworkState(MainActivity.this) != NetUtil.NETWORK_NONE) {
+                Log.d("myWeatherForecast", "网络ok！");
+                requestWeatherByCode(newCityCode);
+            } else {
+                Log.d("myWeatherForecast", "网络挂了！");
+                Toast.makeText(MainActivity.this, "网络未连接", Toast.LENGTH_SHORT).show();
+            }
+        }
 
     }
 
