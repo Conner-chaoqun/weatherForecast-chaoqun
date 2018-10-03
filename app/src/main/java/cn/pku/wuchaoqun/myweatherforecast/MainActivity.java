@@ -144,15 +144,21 @@ public class MainActivity extends AppCompatActivity {
         timeTv.setText("今天" + info.getUpdateTime() + "发布");
         humidityTv.setText("湿度:" + info.getShidu());
         weekTodayTv.setText("今天" + info.getDate());
-        pmDataTv.setText(info.getPm25());
-        pmQualityTv.setText(info.getQuality());
+
         temTv.setText("温度:" + info.getWendu() + "℃");
         temTodayTv.setText(info.getLow() + "~" + info.getHigh());
         climateTv.setText(info.getType());
         windTv.setText(info.getFengxiang() + " 风力:" + info.getFengli());
 
         weatherImg.setImageResource(imgSrcForWeather.get(info.getType()));
-        pmImg.setImageResource(imgSrcForPm.get(Integer.parseInt(info.getPm25())/50));
+        if (info.getPm25() != null){
+            pmImg.setImageResource(imgSrcForPm.get(Integer.parseInt(info.getPm25())/50));
+            pmDataTv.setText(info.getPm25());
+            pmQualityTv.setText(info.getQuality());
+        }else {
+            pmDataTv.setText("未知");
+            pmQualityTv.setText("未知");
+        }
 
 
         Toast.makeText(this, "更新成功！", Toast.LENGTH_SHORT).show();

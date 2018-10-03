@@ -38,6 +38,10 @@ public class MyApplication extends Application {
         initCityList();
     }
 
+    public List<City> getList(){
+        return myCitylist;
+    }
+
     private void initCityList() {
         myCitylist = new ArrayList<>();
         new Thread(new Runnable() {
