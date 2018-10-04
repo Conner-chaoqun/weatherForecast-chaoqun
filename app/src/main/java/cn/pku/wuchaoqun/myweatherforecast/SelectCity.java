@@ -21,6 +21,10 @@ public class SelectCity extends AppCompatActivity {
 
     private ListView myList;
 
+    private CityAdapter adapter;
+
+    private List<City> list;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +44,15 @@ public class SelectCity extends AppCompatActivity {
         });
         */
 
+        initData();
         initView();
+
+    }
+
+    private void initData() {
+        MyApplication myApplication = (MyApplication) getApplication();
+        list = myApplication.getList();
+        adapter = new CityAdapter(this, R.layout.city_item, list);
 
     }
 
@@ -54,20 +66,11 @@ public class SelectCity extends AppCompatActivity {
         });
 
         myList = findViewById(R.id.city_list);
-        MyApplication myApplication = (MyApplication) getApplication();
-        List<City> list = new ArrayList<>();
-        final List<City> filterList = new ArrayList<>();
-        list = myApplication.getList();
-        for (City city : list) {
-            filterList.add(city);
-        }
-
-        CityAdapter adapter = new CityAdapter(this, R.layout.city_item, filterList);
         myList.setAdapter(adapter);
         myList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                City city = filterList.get(position);
+                City city = list.get(position);
                 Intent intent = new Intent();
                 intent.putExtra("cityCode", city.getNumber());
                 setResult(RESULT_OK, intent);
