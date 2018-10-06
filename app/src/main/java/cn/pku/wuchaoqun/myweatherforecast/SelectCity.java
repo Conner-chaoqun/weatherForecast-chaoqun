@@ -3,6 +3,9 @@ package cn.pku.wuchaoqun.myweatherforecast;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -11,7 +14,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import cn.pku.wuchaoqun.myweatherforecast.MyAdapter;
 import cn.pku.wuchaoqun.app.MyApplication;
 import cn.pku.wuchaoqun.bean.City;
 
@@ -19,11 +22,16 @@ public class SelectCity extends AppCompatActivity {
 
     private ImageView myBack;
 
-    private ListView myList;
-
-    private CityAdapter adapter;
-
     private List<City> list;
+
+    //private CityAdapter adapter;
+
+
+    private RecyclerView mRecyclerView;
+
+    private MyAdapter mAdapter;
+
+    private RecyclerView.LayoutManager mLayoutManager;
 
 
     @Override
@@ -47,12 +55,16 @@ public class SelectCity extends AppCompatActivity {
         initData();
         initView();
 
+
+
     }
 
     private void initData() {
         MyApplication myApplication = (MyApplication) getApplication();
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         list = myApplication.getList();
-        adapter = new CityAdapter(this, R.layout.city_item, list);
+        mAdapter = new MyAdapter(list);
+        //adapter = new CityAdapter(this, R.layout.city_item, list);
 
     }
 
@@ -65,6 +77,21 @@ public class SelectCity extends AppCompatActivity {
             }
         });
 
+        mAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                City city = list.get(position);
+                Intent intent = new Intent();
+                intent.putExtra("cityCode", city.getNumber());
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+        mRecyclerView = findViewById(R.id.city_list);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+        /*
         myList = findViewById(R.id.city_list);
         myList.setAdapter(adapter);
         myList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -77,6 +104,7 @@ public class SelectCity extends AppCompatActivity {
                 finish();
             }
         });
+        */
 
 
 
