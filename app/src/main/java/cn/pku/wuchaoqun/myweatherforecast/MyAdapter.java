@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.Collections;
 import java.util.List;
 
 import cn.pku.wuchaoqun.bean.City;
@@ -17,6 +18,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
     private List<City> list;
 
     private OnItemClickListener mOnItemClickListener;
+
+    public MyAdapter updataView(List<City> filterDataList) {
+        Collections.sort(filterDataList);
+        return new MyAdapter(filterDataList);
+    }
 
 
     public interface OnItemClickListener {

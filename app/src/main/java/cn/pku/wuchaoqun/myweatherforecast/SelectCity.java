@@ -1,16 +1,20 @@
 package cn.pku.wuchaoqun.myweatherforecast;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +28,8 @@ public class SelectCity extends AppCompatActivity {
 
     private List<City> list;
 
+    private List<City> filterDataList;
+
     //private CityAdapter adapter;
 
 
@@ -32,6 +38,8 @@ public class SelectCity extends AppCompatActivity {
     private MyAdapter mAdapter;
 
     private RecyclerView.LayoutManager mLayoutManager;
+
+    private SearchView mSearchView;
 
 
     @Override
@@ -106,10 +114,52 @@ public class SelectCity extends AppCompatActivity {
         });
         */
 
+        mSearchView = findViewById(R.id.city_sv);
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filterData(newText);
+                mRecyclerView.setAdapter(mAdapter);
+                return true;
+            }
+        });
 
 
 
 
+
+    }
+
+    private void filterData(String newText) {
+        filterDataList = new ArrayList<>();
+        if (TextUtils.isEmpty(newText)) {
+            for (City c : list) {
+                filterDataList.add(c);
+            }
+        }else {
+            filterDataList.clear();
+            for (City c : list) {
+                if (c.getCity().indexOf(newText.toString()) != -1) {
+                    filterDataList.add(c);
+                }
+            }
+        }
+        mAdapter = mAdapter.updataView(filterDataList);
+        mAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+                City city = filterDataList.get(position);
+                Intent intent = new Intent();
+                intent.putExtra("cityCode", city.getNumber());
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
 
     }
 }

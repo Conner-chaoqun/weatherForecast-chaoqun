@@ -1,6 +1,8 @@
 package cn.pku.wuchaoqun.bean;
 
-public class City {
+import android.support.annotation.NonNull;
+
+public class City implements Comparable<City>{
 
     private String province;
     private String city;
@@ -40,5 +42,11 @@ public class City {
 
     public String getAllFirstPY() {
         return allFirstPY;
+    }
+
+    @Override
+    public int compareTo(@NonNull City o) {
+
+        return o.getCity().compareTo(this.getCity());
     }
 }
