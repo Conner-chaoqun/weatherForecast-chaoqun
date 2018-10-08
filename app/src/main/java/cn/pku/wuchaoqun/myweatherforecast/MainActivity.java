@@ -26,10 +26,13 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.pku.wuchaoqun.bean.City;
 import cn.pku.wuchaoqun.bean.TodayWeatherInfo;
 import cn.pku.wuchaoqun.util.NetUtil;
 
 public class MainActivity extends AppCompatActivity {
+
+    private String currentCityName;
 
     private static final int UPDATE_TODAY_WEATHER = 1;
 
@@ -47,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        currentCityName = "北京";
         myUpdate = findViewById(R.id.title_update_img);
         myUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, SelectCity.class);
+                intent.putExtra("cityName", currentCityName);
                 //startActivity(intent);
                 startActivityForResult(intent, 1);
             }
@@ -139,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateWeather(TodayWeatherInfo info) {
+        currentCityName = info.getCity();
         titleCityTv.setText(info.getCity() + "天气");
         cityTv.setText(info.getCity());
         timeTv.setText("今天" + info.getUpdateTime() + "发布");
@@ -174,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void requestWeatherByCode(String cityCode) {
+    private void requestWeatherByCode(final String cityCode) {
         final String address = "http://wthrcdn.etouch.cn/WeatherApi?citykey=" + cityCode;
         Log.d("myWeatherForecast", address);
         new Thread(new Runnable() {
@@ -206,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
                         msg.obj = todayWeatherInfo;
                         myHandler.sendMessage(msg);
                     }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {

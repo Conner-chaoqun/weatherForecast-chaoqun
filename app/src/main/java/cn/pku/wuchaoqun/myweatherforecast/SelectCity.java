@@ -2,6 +2,7 @@ package cn.pku.wuchaoqun.myweatherforecast;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -9,12 +10,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +28,8 @@ import cn.pku.wuchaoqun.bean.City;
 public class SelectCity extends AppCompatActivity {
 
     private ImageView myBack;
+
+    private TextView titleCityName;
 
     private List<City> list;
 
@@ -76,7 +81,15 @@ public class SelectCity extends AppCompatActivity {
 
     }
 
+
+
     private void initView() {
+        titleCityName = findViewById(R.id.title_name_tv);
+        Intent intent = getIntent();
+        String name = intent.getStringExtra("cityName");
+        Log.d("intent", "initView: " + name );
+        titleCityName.setText("当前城市：" + name);
+
         myBack = findViewById(R.id.title_back_img);
         myBack.setOnClickListener(new View.OnClickListener() {
             @Override
