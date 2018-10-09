@@ -116,6 +116,8 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    
+
     private void initView() {
         cityTv = findViewById(R.id.city_tv);
         titleCityTv = findViewById(R.id.title_city_tv);

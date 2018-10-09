@@ -156,8 +156,11 @@ public class SelectCity extends AppCompatActivity {
             }
         }else {
             filterDataList.clear();
+//            Log.d("首字母", " " + newText.toUpperCase());
             for (City c : list) {
                 if (c.getCity().indexOf(newText.toString()) != -1) {
+                    filterDataList.add(c);
+                }else if (c.getAllPY().indexOf(newText.toUpperCase().toString()) != -1) {
                     filterDataList.add(c);
                 }
             }
@@ -176,3 +179,4 @@ public class SelectCity extends AppCompatActivity {
 
     }
 }
+
