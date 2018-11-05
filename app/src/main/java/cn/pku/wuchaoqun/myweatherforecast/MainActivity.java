@@ -1,5 +1,6 @@
 package cn.pku.wuchaoqun.myweatherforecast;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
@@ -8,6 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,21 +50,32 @@ public class MainActivity extends AppCompatActivity {
 
     private Map<Integer,Integer> imgSrcForPm = new HashMap<>();
 
+    private String cityCode;
+
+    private SharedPreferences.Editor editor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        currentCityName = "北京";
+        SharedPreferences mySharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
+        cityCode = mySharedPreferences.getString("now_city_code", "101010100");
+        Log.d("now_city_code", "onCreate: "+cityCode);
+        editor = mySharedPreferences.edit();
+        requestWeatherByCode(cityCode);
+
         myUpdate = findViewById(R.id.title_update_img);
+
+
         myUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences mySharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
-                String cityCode = mySharedPreferences.getString("main_city_code", "101010100");
                 Log.d("myWeatherForecast", "onClick: " + cityCode);
 
                 if (NetUtil.getNetworkState(MainActivity.this) != NetUtil.NETWORK_NONE) {
                     Log.d("myWeatherForecast", "网络ok！");
+                    myUpdate.setClickable(false);
+                    updateAnimation(MainActivity.this, myUpdate);
                     requestWeatherByCode(cityCode);
                 } else {
                     Log.d("myWeatherForecast", "网络挂了！");
@@ -87,13 +102,33 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        editor.putString("now_city_code", cityCode);
+        editor.commit();
+        Log.d("now_city_code", "onDestroy: "+cityCode);
+    }
+
+
+
+    private void updateAnimation(Context context, ImageView update){
+        Animation circle_anim = AnimationUtils.loadAnimation(context, R.anim.anim_round_rotate);
+        LinearInterpolator interpolator = new LinearInterpolator();  //设置匀速旋转，在xml文件中设置会出现卡顿
+        circle_anim.setInterpolator(interpolator);
+        if (circle_anim != null) {
+            update.startAnimation(circle_anim);  //开始动画
+        }
+
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent intent){
         if (requestCode == 1 && resultCode == RESULT_OK){
-            String newCityCode = intent.getStringExtra("cityCode");
-            Log.d("myWeatherForecast", "选择的城市代码是："+newCityCode);
+            cityCode = intent.getStringExtra("cityCode");
+            Log.d("myWeatherForecast", "选择的城市代码是："+cityCode);
             if (NetUtil.getNetworkState(MainActivity.this) != NetUtil.NETWORK_NONE) {
                 Log.d("myWeatherForecast", "网络ok！");
-                requestWeatherByCode(newCityCode);
+                requestWeatherByCode(cityCode);
             } else {
                 Log.d("myWeatherForecast", "网络挂了！");
                 Toast.makeText(MainActivity.this, "网络未连接", Toast.LENGTH_SHORT).show();
@@ -116,7 +151,37 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    
+    private void initImgWithWeather(){
+        imgSrcForWeather.put("晴", R.drawable.biz_plugin_weather_qing);
+        imgSrcForWeather.put("多云", R.drawable.biz_plugin_weather_duoyun);
+        imgSrcForWeather.put("暴雪", R.drawable.biz_plugin_weather_baoxue);
+        imgSrcForWeather.put("暴雨", R.drawable.biz_plugin_weather_baoyu);
+        imgSrcForWeather.put("大暴雨", R.drawable.biz_plugin_weather_dabaoyu);
+        imgSrcForWeather.put("大雪", R.drawable.biz_plugin_weather_daxue);
+        imgSrcForWeather.put("大雨", R.drawable.biz_plugin_weather_dayu);
+        imgSrcForWeather.put("雷阵雨", R.drawable.biz_plugin_weather_leizhenyu);
+        imgSrcForWeather.put("雷阵雨与冰雹", R.drawable.biz_plugin_weather_leizhenyubingbao);
+        imgSrcForWeather.put("沙尘暴", R.drawable.biz_plugin_weather_shachenbao);
+        imgSrcForWeather.put("特大暴雨", R.drawable.biz_plugin_weather_tedabaoyu);
+        imgSrcForWeather.put("雾", R.drawable.biz_plugin_weather_wu);
+        imgSrcForWeather.put("小雪", R.drawable.biz_plugin_weather_xiaoxue);
+        imgSrcForWeather.put("小雨", R.drawable.biz_plugin_weather_xiaoyu);
+        imgSrcForWeather.put("阴", R.drawable.biz_plugin_weather_yin);
+        imgSrcForWeather.put("雨夹雪", R.drawable.biz_plugin_weather_yujiaxue);
+        imgSrcForWeather.put("阵雪", R.drawable.biz_plugin_weather_zhenxue);
+        imgSrcForWeather.put("阵雨", R.drawable.biz_plugin_weather_zhenyu);
+        imgSrcForWeather.put("中雪", R.drawable.biz_plugin_weather_zhongxue);
+        imgSrcForWeather.put("中雨", R.drawable.biz_plugin_weather_zhongyu);
+    }
+
+    private void initImgWithPm(){
+        imgSrcForPm.put(0, R.drawable.biz_plugin_weather_0_50);
+        imgSrcForPm.put(1, R.drawable.biz_plugin_weather_51_100);
+        imgSrcForPm.put(2, R.drawable.biz_plugin_weather_101_150);
+        imgSrcForPm.put(3, R.drawable.biz_plugin_weather_151_200);
+        imgSrcForPm.put(4, R.drawable.biz_plugin_weather_201_300);
+        imgSrcForPm.put(5, R.drawable.biz_plugin_weather_201_300);
+    }
 
     private void initView() {
         cityTv = findViewById(R.id.city_tv);
@@ -134,20 +199,15 @@ public class MainActivity extends AppCompatActivity {
         weatherImg = findViewById(R.id.weather_img);
         pmImg = findViewById(R.id.pm_img);
 
-        imgSrcForWeather.put("晴", R.drawable.biz_plugin_weather_qing);
-        imgSrcForWeather.put("多云", R.drawable.biz_plugin_weather_duoyun);
-        imgSrcForPm.put(0, R.drawable.biz_plugin_weather_0_50);
-        imgSrcForPm.put(1, R.drawable.biz_plugin_weather_51_100);
-        imgSrcForPm.put(2, R.drawable.biz_plugin_weather_101_150);
-        imgSrcForPm.put(3, R.drawable.biz_plugin_weather_151_200);
-        imgSrcForPm.put(4, R.drawable.biz_plugin_weather_201_300);
-        imgSrcForPm.put(5, R.drawable.biz_plugin_weather_201_300);
+        initImgWithWeather();
+        initImgWithPm();
+
     }
 
     private void updateWeather(TodayWeatherInfo info) {
         currentCityName = info.getCity();
         titleCityTv.setText(info.getCity() + "天气");
-        cityTv.setText(info.getCity());
+        cityTv.setText(currentCityName);
         timeTv.setText("今天" + info.getUpdateTime() + "发布");
         humidityTv.setText("湿度:" + info.getShidu());
         weekTodayTv.setText("今天" + info.getDate());
@@ -167,6 +227,8 @@ public class MainActivity extends AppCompatActivity {
             pmQualityTv.setText("未知");
         }
 
+        myUpdate.clearAnimation();
+        myUpdate.setClickable(true);
 
         Toast.makeText(this, "更新成功！", Toast.LENGTH_SHORT).show();
     }

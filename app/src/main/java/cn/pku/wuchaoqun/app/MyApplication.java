@@ -54,14 +54,14 @@ public class MyApplication extends Application {
 
     private void prepareCityList() {
         myCitylist = myCityDB.getAllCity();
-        int count = 0;
-        for (City city : myCitylist) {
-            count += 1;
-            String cityName = city.getCity();
-            String cityCode = city.getNumber();
-            Log.d(TAG, cityCode + " : " + cityName +"  " + count);
-        }
-        Log.d(TAG, "count = " + count);
+//        int count = 0;
+//        for (City city : myCitylist) {
+//            count += 1;
+//            String cityName = city.getCity();
+//            String cityCode = city.getNumber();
+//            Log.d(TAG, cityCode + " : " + cityName +"  " + count);
+//        }
+//        Log.d(TAG, "count = " + count);
     }
 
 

@@ -35,10 +35,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView cityProvince;
         TextView cityName;
         TextView cityCode;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            cityProvince = itemView.findViewById(R.id.city_province);
             cityName = itemView.findViewById(R.id.city_name_tv);
             cityCode = itemView.findViewById(R.id.city_code_tv);
         }
@@ -58,6 +60,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
+        viewHolder.cityProvince.setText(list.get(i).getProvince());
         viewHolder.cityName.setText(list.get(i).getCity());
         viewHolder.cityCode.setText(list.get(i).getNumber());
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {

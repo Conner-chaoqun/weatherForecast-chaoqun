@@ -151,21 +151,21 @@ public class SelectCity extends AppCompatActivity {
     private void filterData(String newText) {
         filterDataList = new ArrayList<>();
         if (TextUtils.isEmpty(newText)) {
-            for (City c : list) {
-                filterDataList.add(c);
-            }
+            mAdapter = new MyAdapter(list);
         }else {
             filterDataList.clear();
 //            Log.d("首字母", " " + newText.toUpperCase());
             for (City c : list) {
                 if (c.getCity().indexOf(newText.toString()) != -1) {
                     filterDataList.add(c);
-                }else if (c.getAllPY().indexOf(newText.toUpperCase().toString()) != -1) {
+                } else if (c.getAllPY().indexOf(newText.toUpperCase().toString()) == 0) {
+                    filterDataList.add(c);
+                } else if (c.getAllFirstPY().indexOf(newText.toUpperCase().toString()) == 0) {
                     filterDataList.add(c);
                 }
             }
+            mAdapter = mAdapter.updataView(filterDataList);
         }
-        mAdapter = mAdapter.updataView(filterDataList);
         mAdapter.setOnItemClickListener(new MyAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
