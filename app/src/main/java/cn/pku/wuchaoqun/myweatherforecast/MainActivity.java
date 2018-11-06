@@ -7,6 +7,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -16,6 +18,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
@@ -27,10 +33,14 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import cn.pku.wuchaoqun.bean.City;
+import cn.pku.wuchaoqun.bean.ForecastWeather;
 import cn.pku.wuchaoqun.bean.TodayWeatherInfo;
 import cn.pku.wuchaoqun.util.NetUtil;
 
@@ -53,6 +63,14 @@ public class MainActivity extends AppCompatActivity {
     private String cityCode;
 
     private SharedPreferences.Editor editor;
+
+    private RecyclerView mRecyclerView;
+
+    private RecyclerView.Adapter mAdapter;
+
+    private RecyclerView.LayoutManager mLayoutManager;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,10 +143,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent intent){
         if (requestCode == 1 && resultCode == RESULT_OK){
             cityCode = intent.getStringExtra("cityCode");
+            String cityName = intent.getStringExtra("cityName");
+            String province = intent.getStringExtra("province");
             Log.d("myWeatherForecast", "选择的城市代码是："+cityCode);
             if (NetUtil.getNetworkState(MainActivity.this) != NetUtil.NETWORK_NONE) {
                 Log.d("myWeatherForecast", "网络ok！");
+
                 requestWeatherByCode(cityCode);
+
+
             } else {
                 Log.d("myWeatherForecast", "网络挂了！");
                 Toast.makeText(MainActivity.this, "网络未连接", Toast.LENGTH_SHORT).show();
@@ -202,6 +225,9 @@ public class MainActivity extends AppCompatActivity {
         initImgWithWeather();
         initImgWithPm();
 
+        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        mRecyclerView = findViewById(R.id.day_week_weather);
+        mRecyclerView.setLayoutManager(mLayoutManager);
     }
 
     private void updateWeather(TodayWeatherInfo info) {
@@ -223,13 +249,16 @@ public class MainActivity extends AppCompatActivity {
             pmDataTv.setText(info.getPm25());
             pmQualityTv.setText(info.getQuality());
         }else {
+            pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
             pmDataTv.setText("未知");
             pmQualityTv.setText("未知");
         }
 
+        mAdapter = new DayOfWeekForecastAdapter(info.getDayOfWeekForecastWeather(), imgSrcForWeather);
+        mRecyclerView.setAdapter(mAdapter);
+
         myUpdate.clearAnimation();
         myUpdate.setClickable(true);
-
         Toast.makeText(this, "更新成功！", Toast.LENGTH_SHORT).show();
     }
 
@@ -243,7 +272,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void requestWeatherByCode(final String cityCode) {
+
+    private void requestWeatherByCode(String cityCode) {
         final String address = "http://wthrcdn.etouch.cn/WeatherApi?citykey=" + cityCode;
         Log.d("myWeatherForecast", address);
         new Thread(new Runnable() {
@@ -267,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     String result = response.toString();
                     Log.d("myWeatherForecast", result);
-                    todayWeatherInfo = parseXML(result);
+                    todayWeatherInfo = dom4jPaeseXML(result);
                     if (todayWeatherInfo != null) {
                         Log.d("myWeatherForecast", todayWeatherInfo.toString());
                         Message msg = new Message();
@@ -285,6 +315,53 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }).start();
+    }
+
+    private TodayWeatherInfo dom4jPaeseXML(String xml) throws DocumentException {
+        Boolean today = false;
+        List<ForecastWeather> dayOfWeekForecastWeather = new ArrayList<>();
+        TodayWeatherInfo info = new TodayWeatherInfo();
+        Document document = DocumentHelper.parseText(xml);
+
+        Element root = document.getRootElement();
+        Element node = root.element("city");
+        info.setCity(node.getText());
+        info.setUpdateTime(root.element("updatetime").getText());
+        info.setWendu(root.elementText("wendu"));
+        info.setFengli(root.elementText("fengli"));
+        info.setShidu(root.elementText("shidu"));
+        info.setFengxiang(root.elementText("fengxiang"));
+        node = root.element("environment");
+        if (node!=null){
+            info.setPm25(node.elementText("pm25"));
+            info.setQuality(node.elementText("quality"));
+        }
+        node = root.element("forecast");
+//        node = root.element("forecast").element("weather");
+//        info.setDate(node.elementText("date"));
+//        info.setHigh(node.elementText("high"));
+//        info.setLow(node.elementText("low"));
+//        info.setType(node.element("day").elementText("type"));
+        for (Iterator<Element> it = node.elementIterator("weather");it.hasNext();){
+            Element weather = it.next();
+            if (!today){
+                today = true;
+                info.setDate(weather.elementText("date"));
+                info.setHigh(weather.elementText("high"));
+                info.setLow(weather.elementText("low"));
+                info.setType(weather.element("day").elementText("type"));
+            }else {
+                ForecastWeather eachDayForecastWeather  = new ForecastWeather();
+                eachDayForecastWeather.setDate(weather.elementText("date"));
+                eachDayForecastWeather.setHigh(weather.elementText("high"));
+                eachDayForecastWeather.setLow(weather.elementText("low"));
+                eachDayForecastWeather.setType(weather.element("day").elementText("type"));
+                eachDayForecastWeather.setFengxiang(weather.element("day").elementText("fengxiang"));
+                dayOfWeekForecastWeather.add(eachDayForecastWeather);
+            }
+        }
+        info.setDayOfWeekForcastWeather(dayOfWeekForecastWeather);
+        return info;
     }
 
     private TodayWeatherInfo parseXML(String xml) {

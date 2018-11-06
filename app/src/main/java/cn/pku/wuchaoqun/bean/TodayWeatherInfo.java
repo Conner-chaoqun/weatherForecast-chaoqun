@@ -1,5 +1,7 @@
 package cn.pku.wuchaoqun.bean;
 
+import java.util.List;
+
 public class TodayWeatherInfo {
     private String city;
     private String updateTime;
@@ -13,8 +15,15 @@ public class TodayWeatherInfo {
     private String high;
     private String low;
     private String type;
+    private List<ForecastWeather> dayOfWeekForecastWeather;
 
-    public TodayWeatherInfo() {
+    public void setDayOfWeekForcastWeather(List<ForecastWeather> dayOfWeekForecastWeather) {
+        this.dayOfWeekForecastWeather = dayOfWeekForecastWeather;
+    }
+
+    public List<ForecastWeather> getDayOfWeekForecastWeather() {
+
+        return dayOfWeekForecastWeather;
     }
 
     public String getCity() {
@@ -128,6 +137,7 @@ public class TodayWeatherInfo {
                 ", high='" + high + '\'' +
                 ", low='" + low + '\'' +
                 ", type='" + type + '\'' +
+                ", dayOfWeekForecastWeather=" + dayOfWeekForecastWeather +
                 '}';
     }
 }

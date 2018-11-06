@@ -86,7 +86,7 @@ public class SelectCity extends AppCompatActivity {
     private void initView() {
         titleCityName = findViewById(R.id.title_name_tv);
         Intent intent = getIntent();
-        String name = intent.getStringExtra("cityName");
+        final String name = intent.getStringExtra("cityName");
         Log.d("intent", "initView: " + name );
         titleCityName.setText("当前城市：" + name);
 
@@ -104,6 +104,8 @@ public class SelectCity extends AppCompatActivity {
                 City city = list.get(position);
                 Intent intent = new Intent();
                 intent.putExtra("cityCode", city.getNumber());
+                intent.putExtra("cityName", city.getCity());
+                intent.putExtra("province",city.getProvince());
                 setResult(RESULT_OK, intent);
                 finish();
             }
