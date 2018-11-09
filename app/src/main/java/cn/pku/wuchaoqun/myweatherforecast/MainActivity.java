@@ -18,6 +18,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -54,11 +60,11 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView cityTv, timeTv, humidityTv, weekTodayTv, pmDataTv, pmQualityTv, temTv, temTodayTv, climateTv, windTv, titleCityTv;
 
-    private ImageView weatherImg, pmImg;
+    private ImageView weatherImg, pmImg, locationImg;
 
-    private Map<String,Integer> imgSrcForWeather = new HashMap<>();
+    private Map<String, Integer> imgSrcForWeather = new HashMap<>();
 
-    private Map<Integer,Integer> imgSrcForPm = new HashMap<>();
+    private Map<Integer, Integer> imgSrcForPm = new HashMap<>();
 
     private String cityCode;
 
@@ -70,17 +76,33 @@ public class MainActivity extends AppCompatActivity {
 
     private RecyclerView.LayoutManager mLayoutManager;
 
+    public LocationClient locationClient;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         SharedPreferences mySharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
         cityCode = mySharedPreferences.getString("now_city_code", "101010100");
-        Log.d("now_city_code", "onCreate: "+cityCode);
+        Log.d("now_city_code", "onCreate: " + cityCode);
         editor = mySharedPreferences.edit();
         requestWeatherByCode(cityCode);
+
+        locationClient = new LocationClient(getApplicationContext());
+        locationClient.registerLocationListener(new MyLocationListener());
+
+        locationImg = findViewById(R.id.title_location_img);
+        locationImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                initLocation();
+                updateAnimation(MainActivity.this, locationImg);
+                locationClient.start();
+                locationClient.requestLocation();
+            }
+        });
 
         myUpdate = findViewById(R.id.title_update_img);
 
@@ -125,12 +147,18 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
         editor.putString("now_city_code", cityCode);
         editor.commit();
-        Log.d("now_city_code", "onDestroy: "+cityCode);
+        Log.d("now_city_code", "onDestroy: " + cityCode);
+        locationClient.stop();
+    }
+
+    private void initLocation(){
+        LocationClientOption option = new LocationClientOption();
+        option.setIsNeedAddress(true);
+        locationClient.setLocOption(option);
     }
 
 
-
-    private void updateAnimation(Context context, ImageView update){
+    private void updateAnimation(Context context, ImageView update) {
         Animation circle_anim = AnimationUtils.loadAnimation(context, R.anim.anim_round_rotate);
         LinearInterpolator interpolator = new LinearInterpolator();  //设置匀速旋转，在xml文件中设置会出现卡顿
         circle_anim.setInterpolator(interpolator);
@@ -140,12 +168,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent){
-        if (requestCode == 1 && resultCode == RESULT_OK){
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
             cityCode = intent.getStringExtra("cityCode");
             String cityName = intent.getStringExtra("cityName");
             String province = intent.getStringExtra("province");
-            Log.d("myWeatherForecast", "选择的城市代码是："+cityCode);
+            Log.d("myWeatherForecast", "选择的城市代码是：" + cityCode);
             if (NetUtil.getNetworkState(MainActivity.this) != NetUtil.NETWORK_NONE) {
                 Log.d("myWeatherForecast", "网络ok！");
 
@@ -174,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void initImgWithWeather(){
+    private void initImgWithWeather() {
         imgSrcForWeather.put("晴", R.drawable.biz_plugin_weather_qing);
         imgSrcForWeather.put("多云", R.drawable.biz_plugin_weather_duoyun);
         imgSrcForWeather.put("暴雪", R.drawable.biz_plugin_weather_baoxue);
@@ -197,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
         imgSrcForWeather.put("中雨", R.drawable.biz_plugin_weather_zhongyu);
     }
 
-    private void initImgWithPm(){
+    private void initImgWithPm() {
         imgSrcForPm.put(0, R.drawable.biz_plugin_weather_0_50);
         imgSrcForPm.put(1, R.drawable.biz_plugin_weather_51_100);
         imgSrcForPm.put(2, R.drawable.biz_plugin_weather_101_150);
@@ -244,11 +272,11 @@ public class MainActivity extends AppCompatActivity {
         windTv.setText(info.getFengxiang() + " 风力:" + info.getFengli());
 
         weatherImg.setImageResource(imgSrcForWeather.get(info.getType()));
-        if (info.getPm25() != null){
-            pmImg.setImageResource(imgSrcForPm.get(Integer.parseInt(info.getPm25())/50));
+        if (info.getPm25() != null) {
+            pmImg.setImageResource(imgSrcForPm.get(Integer.parseInt(info.getPm25()) / 50));
             pmDataTv.setText(info.getPm25());
             pmQualityTv.setText(info.getQuality());
-        }else {
+        } else {
             pmImg.setImageResource(R.drawable.biz_plugin_weather_0_50);
             pmDataTv.setText("未知");
             pmQualityTv.setText("未知");
@@ -332,26 +360,21 @@ public class MainActivity extends AppCompatActivity {
         info.setShidu(root.elementText("shidu"));
         info.setFengxiang(root.elementText("fengxiang"));
         node = root.element("environment");
-        if (node!=null){
+        if (node != null) {
             info.setPm25(node.elementText("pm25"));
             info.setQuality(node.elementText("quality"));
         }
         node = root.element("forecast");
-//        node = root.element("forecast").element("weather");
-//        info.setDate(node.elementText("date"));
-//        info.setHigh(node.elementText("high"));
-//        info.setLow(node.elementText("low"));
-//        info.setType(node.element("day").elementText("type"));
-        for (Iterator<Element> it = node.elementIterator("weather");it.hasNext();){
+        for (Iterator<Element> it = node.elementIterator("weather"); it.hasNext(); ) {
             Element weather = it.next();
-            if (!today){
+            if (!today) {
                 today = true;
                 info.setDate(weather.elementText("date"));
                 info.setHigh(weather.elementText("high"));
                 info.setLow(weather.elementText("low"));
                 info.setType(weather.element("day").elementText("type"));
-            }else {
-                ForecastWeather eachDayForecastWeather  = new ForecastWeather();
+            } else {
+                ForecastWeather eachDayForecastWeather = new ForecastWeather();
                 eachDayForecastWeather.setDate(weather.elementText("date"));
                 eachDayForecastWeather.setHigh(weather.elementText("high"));
                 eachDayForecastWeather.setLow(weather.elementText("low"));
@@ -454,5 +477,15 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return info;
+    }
+
+    public class MyLocationListener extends BDAbstractLocationListener {
+        @Override
+        public void onReceiveLocation(BDLocation bdLocation) {
+            String city = bdLocation.getCity();
+            String province = bdLocation.getProvince();
+            Log.d("Location: ", city + "  " + province);
+            locationImg.clearAnimation();
+        }
     }
 }
