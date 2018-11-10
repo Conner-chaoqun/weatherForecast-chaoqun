@@ -1,5 +1,6 @@
 package cn.pku.wuchaoqun.myweatherforecast;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -45,6 +46,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import cn.pku.wuchaoqun.app.MyApplication;
 import cn.pku.wuchaoqun.bean.City;
 import cn.pku.wuchaoqun.bean.ForecastWeather;
 import cn.pku.wuchaoqun.bean.TodayWeatherInfo;
@@ -78,11 +80,16 @@ public class MainActivity extends AppCompatActivity {
 
     public LocationClient locationClient;
 
+    private List<City> list;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        MyApplication myApplication = (MyApplication) getApplication();
+        list = myApplication.getList();
 
         SharedPreferences mySharedPreferences = getSharedPreferences("config", MODE_PRIVATE);
         cityCode = mySharedPreferences.getString("now_city_code", "101010100");
@@ -97,10 +104,10 @@ public class MainActivity extends AppCompatActivity {
         locationImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                locationImg.setClickable(false);
                 initLocation();
                 updateAnimation(MainActivity.this, locationImg);
                 locationClient.start();
-                locationClient.requestLocation();
             }
         });
 
@@ -148,10 +155,9 @@ public class MainActivity extends AppCompatActivity {
         editor.putString("now_city_code", cityCode);
         editor.commit();
         Log.d("now_city_code", "onDestroy: " + cityCode);
-        locationClient.stop();
     }
 
-    private void initLocation(){
+    private void initLocation() {
         LocationClientOption option = new LocationClientOption();
         option.setIsNeedAddress(true);
         locationClient.setLocOption(option);
@@ -162,9 +168,7 @@ public class MainActivity extends AppCompatActivity {
         Animation circle_anim = AnimationUtils.loadAnimation(context, R.anim.anim_round_rotate);
         LinearInterpolator interpolator = new LinearInterpolator();  //设置匀速旋转，在xml文件中设置会出现卡顿
         circle_anim.setInterpolator(interpolator);
-        if (circle_anim != null) {
-            update.startAnimation(circle_anim);  //开始动画
-        }
+        update.startAnimation(circle_anim);  //开始动画
 
     }
 
@@ -188,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @SuppressLint("HandlerLeak")
     private Handler myHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -484,8 +489,23 @@ public class MainActivity extends AppCompatActivity {
         public void onReceiveLocation(BDLocation bdLocation) {
             String city = bdLocation.getCity();
             String province = bdLocation.getProvince();
-            Log.d("Location: ", city + "  " + province);
+            city = city.substring(0,city.length()-1);
+
+            for (City c : list){
+                if (c.getCity().equals(city)){
+                    cityCode = c.getNumber();
+                    Log.d("Location: ", city + "  " + province + "  " + cityCode);
+                    break;
+                }
+            }
+
+
+            myUpdate.setClickable(false);
+            updateAnimation(MainActivity.this, myUpdate);
+            requestWeatherByCode(cityCode);
             locationImg.clearAnimation();
+            locationClient.stop();
+            locationImg.setClickable(true);
         }
     }
 }
