@@ -14,4 +14,7 @@
     <string name="tem_today_tv_text">10℃~30℃</string>
     <string name="climate_tv_text">多云转晴</string>
     <string name="wind_tv_text">微风</string>
+    <string name="title_activity_introduction">IntroductionActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
 </resources>
