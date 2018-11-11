@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
@@ -16,11 +17,13 @@ import cn.pku.wuchaoqun.bean.ForecastWeather;
 public class DayOfWeekForecastAdapter extends RecyclerView.Adapter<DayOfWeekForecastAdapter.ViewHolder> {
 
     private List<ForecastWeather> list;
-    private Map<String,Integer> imgSrcForWeather;
+    private Map<String, Integer> imgSrcForWeather;
+    private Calendar calendar;
 
-    public DayOfWeekForecastAdapter(List<ForecastWeather> list, Map<String,Integer> imgSrcForWeather) {
+    public DayOfWeekForecastAdapter(List<ForecastWeather> list, Map<String, Integer> imgSrcForWeather) {
         this.list = list;
-        this.imgSrcForWeather=imgSrcForWeather;
+        this.imgSrcForWeather = imgSrcForWeather;
+        calendar = Calendar.getInstance();
     }
 
     @NonNull
@@ -35,8 +38,8 @@ public class DayOfWeekForecastAdapter extends RecyclerView.Adapter<DayOfWeekFore
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         String type = list.get(i).getType();
-        viewHolder.eachDayWeek.setText(list.get(i).getDate());
-        viewHolder.eachDayTemperature.setText(list.get(i).getLow()+" ~ "+list.get(i).getHigh());
+        viewHolder.eachDayWeek.setText((calendar.get(Calendar.MONTH) + 1) + "月" + list.get(i).getDate());
+        viewHolder.eachDayTemperature.setText(list.get(i).getLow() + " ~ " + list.get(i).getHigh());
         viewHolder.eachDayClimate.setText(type);
         viewHolder.eachDayWind.setText(list.get(i).getFengxiang());
         viewHolder.eachDayType.setImageResource(imgSrcForWeather.get(type));

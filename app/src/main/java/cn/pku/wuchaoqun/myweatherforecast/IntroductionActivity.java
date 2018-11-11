@@ -196,9 +196,9 @@ public class IntroductionActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_introduction, container, false);
-            TextView textView = rootView.findViewById(R.id.section_label);
+//            TextView textView = rootView.findViewById(R.id.section_label);
             int num = getArguments().getInt(ARG_SECTION_NUMBER);
-            textView.setText(getString(R.string.section_format, num));
+//            textView.setText(getString(R.string.section_format, num));
 
             ImageView imageView = rootView.findViewById(R.id.introductionImg);
             imageView.setImageResource(introduction.get(num));

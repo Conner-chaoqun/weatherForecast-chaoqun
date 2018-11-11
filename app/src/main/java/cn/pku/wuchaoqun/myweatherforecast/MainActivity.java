@@ -41,6 +41,7 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -81,6 +82,8 @@ public class MainActivity extends AppCompatActivity {
     public LocationClient locationClient;
 
     private List<City> list;
+
+    private Calendar calendar;
 
 
     @Override
@@ -257,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
 
         initImgWithWeather();
         initImgWithPm();
+        calendar = Calendar.getInstance();
 
         mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView = findViewById(R.id.day_week_weather);
@@ -269,10 +273,10 @@ public class MainActivity extends AppCompatActivity {
         cityTv.setText(currentCityName);
         timeTv.setText("今天" + info.getUpdateTime() + "发布");
         humidityTv.setText("湿度:" + info.getShidu());
-        weekTodayTv.setText("今天" + info.getDate());
+        weekTodayTv.setText((calendar.get(Calendar.MONTH) + 1) + "月" + info.getDate());
 
         temTv.setText("温度:" + info.getWendu() + "℃");
-        temTodayTv.setText(info.getLow() + "~" + info.getHigh());
+        temTodayTv.setText(info.getLow() + " ~ " + info.getHigh());
         climateTv.setText(info.getType());
         windTv.setText(info.getFengxiang() + " 风力:" + info.getFengli());
 
@@ -489,10 +493,10 @@ public class MainActivity extends AppCompatActivity {
         public void onReceiveLocation(BDLocation bdLocation) {
             String city = bdLocation.getCity();
             String province = bdLocation.getProvince();
-            city = city.substring(0,city.length()-1);
+            city = city.substring(0, city.length() - 1);
 
-            for (City c : list){
-                if (c.getCity().equals(city)){
+            for (City c : list) {
+                if (c.getCity().equals(city)) {
                     cityCode = c.getNumber();
                     Log.d("Location: ", city + "  " + province + "  " + cityCode);
                     break;
